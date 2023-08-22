@@ -24,10 +24,18 @@ class FlashSaleController extends Controller
         'end_date' => ['required']
        ]);
 
-       FlashSale::updateOrCreate(
-            ['id' => 1],
-            ['end_date' => $request->end_date]
-       );
+    //    FlashSale::updateOrCreate(
+    //         ['id' => 1],
+    //         ['end_date' => $request->end_date]
+    //    );
+    
+        $flashSale = FlashSale::first();
+
+        if ($flashSale) {
+            $flashSale->update(['end_date' => $request->end_date]);
+        } else {
+            FlashSale::create(['end_date' => $request->end_date]);
+        }
 
        toastr('Updated Successfully!', 'success', 'Success');
 
