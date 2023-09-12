@@ -48,8 +48,8 @@
                                     <div class="wsus__checkout_single_address">
                                         <div class="form-check">
                                             <input class="form-check-input shipping_address" data-id="{{$address->id}}" type="radio" name="flexRadioDefault"
-                                                id="flexRadioDefault1">
-                                            <label class="form-check-label" for="flexRadioDefault1">
+                                                id="flexRadioDefault{{$loop->index + 1}}">
+                                            <label class="form-check-label" for="flexRadioDefault{{$loop->index + 1}}">
                                                 Select Address
                                             </label>
                                         </div>
@@ -74,9 +74,9 @@
                             @foreach ($shippingMethods as $method)
                                 @if ($method->type === 'min_cost' && getCartTotal() >= $method->min_cost)
                                     <div class="form-check">
-                                        <input class="form-check-input shipping_method" type="radio" name="exampleRadios" id="exampleRadios1"
+                                        <input class="form-check-input shipping_method" type="radio" name="exampleRadios" id="exampleRadios{{$loop->index + 1}}"
                                             value="{{$method->id}}" data-id="{{$method->cost}}">
-                                        <label class="form-check-label" for="exampleRadios1">
+                                        <label class="form-check-label" for="exampleRadios{{$loop->index + 1}}">
                                             {{$method->name}}
                                             <span>cost: ({{$settings->currency_icon}}{{$method->cost}})</span>
                                         </label>
@@ -211,6 +211,7 @@
             }
         });
 
+        $('.shipping_address:first').prop('checked', true).trigger('click');
         $('input[type="radio"]').prop('checked', false);
         $('#shipping_method_id').val("");
         $('#shipping_address_id').val("");
@@ -243,6 +244,9 @@
                 $.ajax({
                     url: "{{route('user.checkout.form-submit')}}",
                     method: 'POST',
+                    headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
                     data: $('#checkOutForm').serialize(),
                     beforeSend: function(){
                         $('#submitCheckoutForm').html('<i class="fas fa-spinner fa-spin fa-1x"></i>')
