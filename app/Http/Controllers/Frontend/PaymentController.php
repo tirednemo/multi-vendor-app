@@ -75,6 +75,7 @@ class PaymentController extends Controller
             $product->save();
         }
 
+        if($paymentMethod!='COD'){
         // store transaction details
         $transaction = new Transaction();
         $transaction->order_id = $order->id;
@@ -84,7 +85,7 @@ class PaymentController extends Controller
         $transaction->amount_real_currency = $paidAmount;
         $transaction->amount_real_currency_name = $paidCurrencyName;
         $transaction->save();
-
+        }
     }
 
     public function clearSession()
@@ -278,7 +279,7 @@ class PaymentController extends Controller
         // clear session
         $this->clearSession();
 
-        return redirect()->route('user.payment.success');
+        return redirect()->route('user.payment.success')->with('method', 'cod');
             
 
     }

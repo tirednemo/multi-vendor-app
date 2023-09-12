@@ -12,6 +12,7 @@ use App\DataTables\processedOrderDataTable;
 use App\DataTables\shippedOrderDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -104,6 +105,12 @@ class OrderController extends Controller
     public function changeOrderStatus(Request $request)
     {
         $order = Order::findOrFail($request->id);
+        if ($request->status == 'canceled') {
+            if ($order->transaction) {
+                $order->transaction->delete();
+            }
+        }
+
         $order->order_status = $request->status;
         $order->save();
 
@@ -113,9 +120,22 @@ class OrderController extends Controller
     public function changePaymentStatus(Request $request)
     {
         $paymentStatus = Order::findOrFail($request->id);
+        if ($request->status == 1) {
+            $transaction = new Transaction();
+            $transaction->order_id = $paymentStatus->id;
+            $transaction->transaction_id = \Str::random(10);
+            $transaction->payment_method = $paymentStatus->payment_method;
+            $transaction->amount = $paymentStatus->amount;
+            $transaction->amount_real_currency = round($paymentStatus->amount, 2);
+            $transaction->amount_real_currency_name = $paymentStatus->currency_name;
+            $transaction->save();
+            }
+            
         $paymentStatus->payment_status = $request->status;
         $paymentStatus->save();
 
         return response(['status' => 'success', 'message' => 'Updated Payment Status Successfully']);
     }
 }
+
+
