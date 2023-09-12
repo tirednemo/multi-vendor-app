@@ -64,8 +64,12 @@
                         <li><a href="{{route('vendor.dashbaord')}}">Vendor Dashboard</a></li>
                         @elseif (auth()->user()->role === 'admin')
                         <li><a href="{{route('admin.dashbaord')}}">Admin Dashboard</a></li>
-
                         @endif
+                        <li> <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <a href="{{route('logout')}}" onclick="event.preventDefault();
+                            this.closest('form').submit();"><i class="far fa-sign-out-alt"></i></a>
+                        </form></li>
                         @else
 
                         <li><a href="{{route('login')}}">login</a></li>
